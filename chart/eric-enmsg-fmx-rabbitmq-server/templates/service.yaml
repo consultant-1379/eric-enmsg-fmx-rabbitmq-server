@@ -1,0 +1,9 @@
+{{- template "eric-enm-common-helmchart-library.service" (list . "eric-enmsg-fmx-rabbitmq-server.service") -}}
+{{- define "eric-enmsg-fmx-rabbitmq-server.service" -}}
+spec:
+  clusterIP: None
+metadata:
+  labels:
+    service: {{ .Values.service.name }}
+{{- end }}
+

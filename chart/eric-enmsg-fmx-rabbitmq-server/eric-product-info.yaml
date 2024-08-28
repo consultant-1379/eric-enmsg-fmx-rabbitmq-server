@@ -1,0 +1,7 @@
+images:
+
+   eric-enmsg-fmx-rabbitmq-server:
+     name: "eric-enmsg-fmx-rabbitmq-server"
+     registry: "armdocker.rnd.ericsson.se"
+     repoPath: "proj-enm"
+     tag: "IMAGE_TAG"

@@ -1,0 +1,41 @@
+{{- template "eric-enm-common-helmchart-library.statefulset" (list . "eric-enmsg-fmx-rabbitmq-server.statefulset") -}}
+{{- define "eric-enmsg-fmx-rabbitmq-server.statefulset" -}}
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app: {{ .Values.service.name }}
+          app.kubernetes.io/name: {{ .Values.service.name }}
+          app.kubernetes.io/instance: {{ .Release.Name }}
+          app.kubernetes.io/managed-by: Tiller
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 256Mi
+  template:
+    spec:
+      securityContext:
+        fsGroup: {{ include "eric-enmsg-fmx-rabbitmq-server.fsGroup.coordinated" . | default "null"}}
+        fsGroupChangePolicy: "OnRootMismatch"
+        {{- if .Values.service.sgUID }}
+        {{- if .Values.global.openshiftEnv.uidRange_min }}
+        runAsUser: {{ add .Values.global.openshiftEnv.uidRange_min .Values.service.sgUID }}
+        runAsGroup: {{ add .Values.global.openshiftEnv.uidRange_min .Values.service.sgUID }}
+        {{- end }}
+        {{- end }}
+    {{- if .Values.affinity }}
+      affinity:
+        podAntiAffinity:
+          {{ .Values.affinity }}:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      #The next line varies depending on how the service retrieves the name, it can be - {{ .Values.service.name }} or  - "{{ .Release.Name }}"
+                      - {{ .Values.service.name }}
+              topologyKey: "kubernetes.io/hostname"
+    {{- end }}
+{{- end -}}

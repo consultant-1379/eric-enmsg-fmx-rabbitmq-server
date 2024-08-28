@@ -1,0 +1,27 @@
+## Ports used for FMX RabbbitMQ Cluster configuration
+# 4369 - epmd, a peer discovery service used by RabbitMQ nodes and CLI tools.
+# 5671, 5672 - used by AMQP clients, with and without TLS respectively.
+# 15671, 15672 - HTTP API clients and rabbitmqadmin with and without TLS (only if the management plugin is enabled)
+# 25672 - used by Erlang distribution for inter-node and CLI tools communication and is allocated from a dynamic range (limited to a single port by default, computed as AMQP port + 20000).
+# 15692 - HTTP API Endpoint that serves metrics to Prometheus-compatible scrapers.
+- name: epmd
+  port: 4369
+  targetPort: 4369
+- name: amqptls
+  port: 5671
+  targetPort: 5671
+- name: amqp
+  port: 5672
+  targetPort: 5672
+- name: tcptls
+  port: 15671
+  targetPort: 15671
+- name: tcp
+  port: 15672
+  targetPort: 15672
+- name: clustering
+  port: 25672
+  targetPort: 25672
+- name: prometheus
+  port: 15692
+  targetPort: 15692

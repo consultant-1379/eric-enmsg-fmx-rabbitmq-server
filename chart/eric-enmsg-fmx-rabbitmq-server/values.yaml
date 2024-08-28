@@ -1,0 +1,127 @@
+## eric-enmsg-fmx-rabbitmq-server image version
+global:
+  openshiftEnv:
+    uidRange_min:
+  registry:
+    url: armdocker.rnd.ericsson.se
+    pullSecret:
+  ingress:
+    enmHost: ENM_HOST
+  persistentVolumeClaim:
+    storageClass:
+  timezone:
+productInfo:
+  # R-State of the product. R State should match helm chart version (3.1.0 -> R2A)
+  # To automate it when packaging the helm chart rstate can be generated
+  # and below value replaced with correct R-State
+  number: CXC Placeholder
+  rstate: RSTATE
+  productionDate: PRODUCTION_DATE
+  revision: VERSION
+securityPolicy:
+  rolename: fmx-rabbitmq
+# Number of replicas(pods) to deploy
+replicas-eric-enmsg-fmx-rabbitmq-server: 2
+images:
+  eric-enmsg-fmx-rabbitmq-server:
+    name: eric-enmsg-fmx-rabbitmq-server
+    tag: VERSION
+imageCredentials:
+  repoPath: proj-enm
+  pullPolicy: IfNotPresent
+  registry:
+    url:
+    pullSecret:
+eric-enm-common-helmchart-library:
+  enabled: true
+## Configure the service
+service:
+  name: fmx-rabbitmq
+  sgUID: 355
+  annotations: {}
+  labels: {}
+## Configure resource requests and limits
+resources:
+  requests:
+    enabled: true
+    memory: 512Mi
+    cpu: 500m
+  limits:
+    enabled: true
+    memory: 768Mi
+    cpu: 1000m
+# Persistent volume claim
+persistentVolumeClaim:
+  enabled: false
+probes:
+  container:
+    startupProbe:
+      enabled: true
+      command: /etc/rabbitmq/rabbitmq-health-check.sh
+      initialDelaySeconds: 10
+      timeoutSeconds: 30
+      periodSeconds: 30
+      failureThreshold: 20
+    livenessProbe:
+      enabled: true
+      command: /etc/rabbitmq/rabbitmq-api-check.sh
+      initialDelaySeconds: 30
+      timeoutSeconds: 30
+      periodSeconds: 30
+      failureThreshold: 2
+    readinessProbe:
+      enabled: true
+      command: /etc/rabbitmq/rabbitmq-health-check.sh
+      initialDelaySeconds: 10
+      timeoutSeconds: 30
+      periodSeconds: 30
+      failureThreshold: 2
+# LivenessProbe Health Check configuration.
+startupProbe:
+  enabled: true
+  command: /etc/rabbitmq/rabbitmq-health-check.sh
+  initialDelaySeconds: 10
+  timeoutSeconds: 30
+  periodSeconds: 30
+  failureThreshold: 20
+livenessProbe:
+  enabled: true
+  command: /etc/rabbitmq/rabbitmq-api-check.sh
+  initialDelaySeconds: 30
+  timeoutSeconds: 30
+  periodSeconds: 30
+  failureThreshold: 2
+readinessProbe:
+  enabled: true
+  command: /etc/rabbitmq/rabbitmq-health-check.sh
+  initialDelaySeconds: 10
+  timeoutSeconds: 30
+  periodSeconds: 30
+  failureThreshold: 2
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    partition: 0
+## Affinity for pod assignment
+affinity: requiredDuringSchedulingIgnoredDuringExecution
+## Pod Disruption Budget is an indicator of the number of disruptions that can be tolerated at a given time.
+podDisruptionBudget:
+  maxUnavailable: 1
+rabbitmq:
+  clustering:
+    k8s_domain: cluster.local
+securityContext:
+  supplementalGroups:
+  - 0
+  - 481
+  - 482
+  fmx-rabbitmq:
+    allowPrivilegeEscalation: false
+    privileged: false
+    readOnlyRootFilesystem: false
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
+fsGroup:
+  coordinated: 10000
